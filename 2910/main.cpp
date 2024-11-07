@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <string>
 #include <limits>
+#include <iomanip>
 
 //Учетные записи
 bool isAdmin = false;
@@ -24,23 +25,28 @@ void Start();
 bool Login();
 void ShopUserMenu();
 void ShopAdminMenu();
+void ShopUserMenu();
 void CreateStaticStorage();
 void ShowStorage();
+void RefilStorage();
+void WriteOffFromStorage();
+void ChangePrice();
+void ChangeStaff();
+void AddEmployee();
 
 template<typename ArrType>
-void SetArr(ArrType arr, ArrType dynamicArr, int size);
+void SetArr(ArrType staticArr, ArrType dynamicArr, int size);
 
 template<typename ArrType>
-void printArr(ArrType dynamicArr, int size);
-
-
-
+void PrintArr(ArrType dynamicArr, int size);
 
 #if defined(max)
 #undef max
 #endif
 
 
+
+//------------------
 int main()
 {
 	Start();
@@ -52,40 +58,40 @@ int main()
 	delete[]nameArr;
 	return 0;
 }
+//------------------
+
+
 
 void Start()
 {
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
-
-
-
 	std::cout << "\n\n\t\tAVI\n\n\n";
+
+
+
 	if (Login() == true)
 	{
 		//std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		if (isAdmin == true)
 		{
-			while (isAdmin == true)
+			std::string choose;
+			do
 			{
-				std::string choose;
-				do
-				{
-					std::cout << "Использовать готовый склад или создать новый?" << "\n1 - Готовый склад\n2 - Создать новый\n\nВвод";
-					std::getline(std::cin, choose, '\n');
-				} while (choose.size() > 1 || choose[0] < 49 || choose[0] > 50);
+				std::cout << "Использовать готовый склад или создать новый?\n";
+				std::cout << "1 - готовый склад\n2 - Создать новый\n\nВвод: ";
+				std::getline(std::cin, choose, '\n');
+			} while (choose.size() > 1 || choose[0] < 49 || choose[0] > 50);
 
-				if (choose == "1")
-				{
-					CreateStaticStorage();
-					ShowStorage();
-				}
-				else
-				{
-					//Создание динамического массива
-				}
-				ShopAdminMenu();
+			if (choose == "1")
+			{
+				CreateStaticStorage();
 			}
+			else
+			{
+
+			}
+			ShopAdminMenu();
 		}
 		else
 		{
@@ -122,7 +128,7 @@ bool Login()
 			}
 		}
 		system("cls");
-		std::cout << "неверно введен логин или пароль!\n\n";
+		std::cout << "невверно введен логин или пароль!\n\n";
 	}
 	return true;
 }
@@ -160,19 +166,19 @@ void ShopAdminMenu()
 		}
 		else if (choose == "2")
 		{
-			void ShowStorage();
+			ShowStorage();
 		}
 		else if (choose == "3")
 		{
-
+			RefilStorage();
 		}
 		else if (choose == "4")
 		{
-
+			WriteOffFromStorage();
 		}
 		else if (choose == "5")
 		{
-
+			ChangePrice();
 		}
 		else if (choose == "6")
 		{
@@ -180,7 +186,7 @@ void ShopAdminMenu()
 		}
 		else if (choose == "7")
 		{
-
+			ChangeStaff();
 		}
 		else if (choose == "8")
 		{
@@ -212,10 +218,198 @@ void CreateStaticStorage()
 
 	double priceStaticArr[staticSize]{ 1200.0, 1500.0, 2699.0, 2299.0, 150.0, 120.0, 400.0, 259.0, 269.0, 700.0 };
 
+
 	SetArr(idStaticArr, idArr, staticSize);
 	SetArr(nameStaticArr, nameArr, staticSize);
 	SetArr(countStaticArr, countArr, staticSize);
 	SetArr(priceStaticArr, priceArr, staticSize);
+}
+
+void ShowStorage()
+{
+	std::cout << "ID\tНазвание\t\t\t\tЦена\tКоличество\n\n";
+	for (int i = 0; i < size; i++)
+	{
+		std::cout << idArr[i] << "\t" << std::left << std::setw(30) << nameArr[i] << "\t"
+			<< priceArr[i] << "\t" << countArr[i] << "\n";
+
+	}
+
+}
+
+void RefilStorage()
+{
+	std::string idStr;
+	do
+	{
+		std::cout << "Пополнение склада\nВведите id товара: ";
+		std::getline(std::cin, idStr, '\n');
+
+		if (idStr.size() == 2 && std::stoi(idStr) <= size && std::stoi(idStr) > 0)
+		{
+			break;
+		}
+
+	} while (idStr.size() > 1 || std::stoi(idStr) < 0 || std::stoi(idStr) > size);
+
+
+
+	int id = std::stoi(idStr);
+
+	std::cout << idArr[id - 1] << "\t" << nameArr[id - 1] << "\n";
+
+	int add{};
+	do
+	{
+		std::cout << "Введите кол-во товара для пополнения: ";
+		std::cin >> add;
+	} while (add < 0 || add > MAXINT - countArr[id - 1]);
+
+	countArr[id - 1] += add;
+	std::cout << "Товар " << nameArr[id - 1] << " успешно пополнен\n\n";
+	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	system("pause");
+
+}
+
+void WriteOffFromStorage()
+{
+	std::string idStr;
+	do
+	{
+		std::cout << "Списание со склада\nВведите id товара: ";
+		std::getline(std::cin, idStr, '\n');
+
+		if (idStr.size() == 2 && std::stoi(idStr) <= size && std::stoi(idStr) > 0)
+		{
+			break;
+		}
+
+	} while (idStr.size() > 1 || std::stoi(idStr) < 0 || std::stoi(idStr) > size);
+
+
+
+	int id = std::stoi(idStr);
+
+	std::cout << idArr[id - 1] << "\t" << nameArr[id - 1] << " Кол-во " << countArr[id - 1] << "\n\n";
+
+	int del{};
+	do
+	{
+		std::cout << "Введите кол-во товара для списания: ";
+		std::cin >> del;
+	} while (del < 0 || del > countArr[id - 1]);
+
+	countArr[id - 1] -= del;
+	std::cout << "Товар " << nameArr[id - 1] << " успешно списан\n\n";
+	system("pause");
+}
+
+void ChangePrice()
+{
+	std::string idStr;
+	do
+	{
+		std::cout << "Изменение цены\nВведите id товара: ";
+		std::getline(std::cin, idStr, '\n');
+
+		if (idStr.size() == 2 && std::stoi(idStr) <= size && std::stoi(idStr) > 0)
+		{
+			break;
+		}
+
+	} while (idStr.size() > 1 || std::stoi(idStr) < 0 || std::stoi(idStr) > size);
+
+
+
+	int id = std::stoi(idStr);
+
+	std::cout << idArr[id - 1] << "\t" << nameArr[id - 1] << " Текущая цена: " << priceArr[id - 1] << "\n\n";
+
+	double newPrice{};
+	do
+	{
+		std::cout << "Введите новую цену: ";
+		std::cin >> newPrice;
+	} while (newPrice < 0 || newPrice > MAXINT);
+
+	priceArr[id - 1] = newPrice;
+	std::cout << "Товар " << nameArr[id - 1] << " принял новую стоимость " << newPrice << "\n\n";
+	system("pause");
+}
+
+void ChangeStaff()
+{
+	std::string choose;
+	std::cout << "Изменение персонала магазина:\n\n";
+	do
+	{
+		std::cout << "1 - добавить нового сотрудника\n2 - Изменить логин и пароль\n3 - Удалить текущего сотрудника\n0 - Выход\n\nВвод: ";
+		std::getline(std::cin, choose, '\n');
+	} while (choose.size() > 1 || choose[0] < 49 || choose[0] > 50);
+
+	if (choose == "1")
+	{
+
+	}
+	else if (choose == "2")
+	{
+
+	}
+	else if (choose == "3")
+	{
+
+	}
+	else if (choose == "0")
+	{
+
+	}
+	else
+	{
+		std::cerr << "\nChangeStaffError\n\n";
+	}
+}
+
+void AddEmployee()
+{
+
+	/*
+		int userCount = 2;
+		std::string* loginArr = new std::string[userCount]{ "admin", "user" };
+		std::string* passwordArr = new std::string[userCount]{ "admin", "user" };
+	*/
+
+	std::string* tempLogin = new std::string[userCount];
+	std::string* tempPass = new std::string[userCount];
+	for (int i = 0; i < userCount; i++)
+	{
+		tempLogin[i] = loginArr[i];
+		tempPass[i] = passwordArr[i];
+	}
+
+
+	//std::swap(loginArr, tempLogin);
+
+	delete[]loginArr;
+	delete[]passwordArr;
+	userCount++;
+	std::string* tempLogin = new std::string[userCount];
+	std::string* tempPass = new std::string[userCount];
+	for (int i = 0; i < userCount; i++)
+	{
+		loginArr[i] = tempLogin[i];
+		passwordArr[i] = tempPass[i];
+	}
+	std::string newLogin, newPass;
+	std::cout << "Введите логин нового сотрудника: ";
+	std::getline(std::cin, newLogin, '\n');
+	std::cout << "Введите пароль нового сотрудника: ";
+	std::getline(std::cin, newPass, '\n');
+
+	loginArr[userCount - 1] = newLogin;
+	passwordArr[userCount - 1] = newPass;
+	delete[]tempLogin;
+	delete[]tempPass;
 }
 
 template<typename ArrType>
@@ -228,20 +422,11 @@ void SetArr(ArrType staticArr, ArrType dynamicArr, int size)
 }
 
 template<typename ArrType>
-void printArr(ArrType dynamicArr, int size)
+void PrintArr(ArrType dynamicArr, int size)
 {
 	for (int i = 0; i < size; i++)
 	{
 		std::cout << dynamicArr[i] << " ";
 	}
 	std::cout << "\n";
-}
-
-void ShowStorage()
-{
-	std::cout << "ID\tНазвание\t\t\tЦена\tКоличество\n\n";
-	for (int i = 0; i < size; i++)
-	{
-		std::cout << idArr[i] << "\t" << nameArr[i] << "\t\t\t" << priceArr[i] << "\t" << countArr[i] << "\n";
-	}
 }
